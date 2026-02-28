@@ -43,7 +43,7 @@ def load_models():
     le_metabolic = joblib.load(os.path.join(model_path, 'le_metabolic.pkl'))
     print("Models loaded successfully!")
 
-GROQ_API_KEY = 'GROQ_API_KEY'
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 GROQ_MODEL = 'llama-3.1-8b-instant'
 
 # 0=Sunday, 1=Monday ... 6=Saturday
