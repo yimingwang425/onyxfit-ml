@@ -14,20 +14,34 @@ CORS(app)
 
 model_path = os.path.dirname(os.path.abspath(__file__))
 
-# Load the model
-workout_model = keras.models.load_model(os.path.join(model_path, 'workout_model.keras'))
-meal_model = keras.models.load_model(os.path.join(model_path, 'meal_model.keras'))
+workout_model = None
+meal_model = None
+scaler_X = None
+scaler_y_workout = None
+scaler_y_meal = None
+le_activity = None
+le_goal = None
+le_diet = None
+le_metabolic = None
 
-scaler_X = joblib.load(os.path.join(model_path, 'scaler_X.pkl'))
-scaler_y_workout = joblib.load(os.path.join(model_path, 'scaler_y_workout.pkl'))
-scaler_y_meal = joblib.load(os.path.join(model_path, 'scaler_y_meal.pkl'))
-
-le_activity = joblib.load(os.path.join(model_path, 'le_activity.pkl'))
-le_goal = joblib.load(os.path.join(model_path, 'le_goal.pkl'))
-le_diet = joblib.load(os.path.join(model_path, 'le_diet.pkl'))
-le_metabolic = joblib.load(os.path.join(model_path, 'le_metabolic.pkl'))
-
-print("Models loaded successfully!")
+def load_models():
+    global workout_model, meal_model, scaler_X, scaler_y_workout, scaler_y_meal
+    global le_activity, le_goal, le_diet, le_metabolic
+    
+    if workout_model is not None:
+        return  # 已经加载过了
+    
+    print("Loading models...")
+    workout_model = keras.models.load_model(os.path.join(model_path, 'workout_model.keras'))
+    meal_model = keras.models.load_model(os.path.join(model_path, 'meal_model.keras'))
+    scaler_X = joblib.load(os.path.join(model_path, 'scaler_X.pkl'))
+    scaler_y_workout = joblib.load(os.path.join(model_path, 'scaler_y_workout.pkl'))
+    scaler_y_meal = joblib.load(os.path.join(model_path, 'scaler_y_meal.pkl'))
+    le_activity = joblib.load(os.path.join(model_path, 'le_activity.pkl'))
+    le_goal = joblib.load(os.path.join(model_path, 'le_goal.pkl'))
+    le_diet = joblib.load(os.path.join(model_path, 'le_diet.pkl'))
+    le_metabolic = joblib.load(os.path.join(model_path, 'le_metabolic.pkl'))
+    print("Models loaded successfully!")
 
 GROQ_API_KEY = 'GROQ_API_KEY'
 GROQ_MODEL = 'llama-3.1-8b-instant'
@@ -165,6 +179,7 @@ def health_check():
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
+    load_models()
     print("Received prediction request")
 
     data = request.get_json()
